@@ -42,7 +42,13 @@ st.set_page_config(
 
 SCENARIO_NUMBERS = [1, 2, 3, 4, 5, 6]
 
-REQUIRED_TOP_LEVEL_SECRETS = ["ANTHROPIC_API_KEY", "GOOGLE_SHEET_ID", "GOOGLE_SHEET_NAME"]
+REQUIRED_TOP_LEVEL_SECRETS = [
+    "ANTHROPIC_API_KEY",
+    "GOOGLE_SHEET_ID",
+    "GOOGLE_SHEET_NAME",
+    "ROSTER_SHEET_ID",
+    "ROSTER_SHEET_NAME",
+]
 REQUIRED_SERVICE_ACCOUNT_FIELDS = [
     "type",
     "project_id",
@@ -140,6 +146,12 @@ def _get_sheets_worksheet():
     return get_worksheet(client, st.secrets["GOOGLE_SHEET_ID"], st.secrets["GOOGLE_SHEET_NAME"])
 
 
+@st.cache_resource
+def _get_roster_worksheet():
+    client = get_sheets_client(dict(st.secrets["gcp_service_account"]))
+    return get_worksheet(client, st.secrets["ROSTER_SHEET_ID"], st.secrets["ROSTER_SHEET_NAME"])
+
+
 @st.dialog("How to use this bot")
 def _show_help_dialog() -> None:
     """Pure UI overlay — reads only the static HELP_TEXT, touches no
@@ -182,8 +194,11 @@ def render_login() -> None:
 
     if submitted:
         try:
-            authorized = is_authorized(staff_id)
-        except (FileNotFoundError, ValueError) as e:
+            authorized = is_authorized(staff_id, _get_roster_worksheet())
+        except Exception as e:
+            # Broad catch: gspread/Google API calls can fail in more ways than
+            # the old CSV read did (auth, permissions, network, rate limits) —
+            # the roster is now a live dependency, not a bundled file.
             st.error(f"Login is currently unavailable: {e}")
             return
 
