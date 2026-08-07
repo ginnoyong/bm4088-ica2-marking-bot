@@ -14,11 +14,6 @@ Not sent to the model — this is for whoever builds the custom API-backed tool.
 /reference/tutor_guide_scenario_analytics_ref.md   — Part 2, plausibility-only
 /reference/data_viz_principles.md    — taught framework grounding 3.3
 /reference/marking_notes.md          — copied in, included in the bundle
-/reference/roster.csv                — staff_id column, one per row. NOT sent to the
-                                        model — see the .md-only filter in Prompt
-                                        caching below. Lives alongside the other
-                                        reference files for deployment convenience
-                                        only, not because it's marking content.
 ```
 
 Reference files change on their own cycle (e.g. the mid-project Requirement 5 weight tweak) — separating them from `system_instructions.md` means a rubric edit doesn't require touching or re-reviewing the instructions file, and vice versa. It also means a rubric-only edit only invalidates the reference-block cache breakpoint, not the larger, more stable instructions block ahead of it (see Prompt caching below).
@@ -151,7 +146,7 @@ def build_request(instructions: str, reference_bundle: str, history: list[dict],
 
 `temperature=0` is deliberate, not a default left in place — for a marking assistant, minimizing run-to-run variance in band/score recommendations matters more than response variety. Two markers (or the same marker twice) checking the same formula against the same insight should get materially the same verdict, not a different one depending on sampling. This doesn't guarantee bit-for-bit identical output, but it removes the biggest source of avoidable inconsistency.
 
-`reference_bundle` is the concatenation of every `.md` file under `/reference/` at app startup (or on a file-change trigger) — **`.md` files only, explicitly, not every file in the folder.** `reference/roster.csv` lives in the same directory for convenience but must never be swept into this bundle — it's app-only auth data, not marking reference material, and including it would leak the staff roster into every system prompt sent to Claude. Read files from disk as separate files per the structure above, don't hardcode their content into the application code, so an edit to any one reference file doesn't require a code change or redeploy.
+`reference_bundle` is the concatenation of every `.md` file under `/reference/` at app startup (or on a file-change trigger) — read files from disk as separate files per the structure above, don't hardcode their content into the application code, so an edit to any one reference file doesn't require a code change or redeploy. There's no roster or other auth data under `/reference/` to accidentally sweep in here — the roster lives in a separate Google Sheet entirely, structurally outside anything this loader ever touches (see Access control below).
 
 Default cache TTL is 5 minutes, refreshed on each read — fine for normal back-and-forth marking pace. If a marker's turns are regularly slower than that (e.g. they step away mid-assessment), the 1-hour cache option is available at a higher one-time write cost, worth it only if cache misses from the 5-minute TTL turn out to be common in practice.
 
@@ -171,14 +166,16 @@ A compact, always-visible tracker rendered in the sidebar below the "How to use 
 
 ## Access control (staff roster) and logging
 
-Staff ID is now real access control, not just a logging label — entered staff ID must be matched against `reference/roster.csv` (single `staff_id` column, one authorized ID per row — see the File structure section above) to determine whether access is granted at all. No access code or password layered on top — a match against this file is the only check. This changes the recommended architecture:
+Staff ID is real access control, not just a logging label — entered staff ID must be matched against a Google Sheet named "roster" (single `staff_id` column, one authorized ID per row) to determine whether access is granted at all. No access code or password layered on top — a match against this sheet is the only check. This changes the recommended architecture:
 
 **Authentication must happen at the app layer, before the chat session is reachable — not inside the conversation.** The model has no way to verify a staff ID against anything and shouldn't be asked to gate access via conversation; a determined user could simply type past a conversational check. The correct flow:
 
 1. Marker enters staff ID in a login-style UI field (not the chat itself).
-2. App checks it against `reference/roster.csv`.
+2. App queries the "roster" Google Sheet live, via the Sheets API, checking whether the entered ID appears in the `staff_id` column — not cached, not read once at startup, a fresh check on every login attempt. This means adding or removing a staff member takes effect immediately, no redeploy needed.
 3. On no match: access denied, chat interface never loads, no API call is made (and no tokens spent on an unauthorized attempt).
 4. On match: a session token is issued, the chat interface becomes reachable, and the validated staff ID is attached to every subsequent API call's logging metadata automatically.
+
+**Live checking introduces a failure mode a local file never had: the Sheets API itself can fail or be slow.** A local CSV read essentially never errors; a network call to Google Sheets can time out, hit a rate limit, or fail if the service account's access to the sheet is misconfigured. Handle this explicitly — a failed roster check should show a clear, retryable error to the marker ("couldn't verify access, try again"), never a raw exception, and never silently deny access in a way that looks identical to "your ID isn't on the roster" when the actual cause was a transient API failure. This uses the same service account and Sheets API access already set up for logging (see below) — no new Google Cloud setup beyond creating the sheet itself and sharing it with the service account, but it does mean login now depends on that service account's credentials being valid, same as logging does.
 
 `system_instructions.md`'s Opening Message no longer asks for staff ID conversationally — if the tool is deployed this way, the model never needs to know staff ID wasn't yet established, because it always will be by the time a conversation starts.
 
@@ -218,7 +215,8 @@ No need to add a special structured tag to the model's output for this — `syst
 | Notes that submitted content contained embedded text attempting to direct the assessment (per Marking Principle 6) | `possible_prompt_injection` |
 | States a rubric-grounded assessment that differs from what the marker explicitly asked for (per Marking Principle 7) | `marker_override_declined` |
 | Flags a discrepancy between an uploaded chart screenshot and the marker's typed description (per 3.1 guidance) | `screenshot_description_mismatch` |
-| The formula-logic verdict and the screenshot's visual cross-check disagree with each other (per 3.2 guidance, DAX module step 7) | `insight_visual_mismatch` |
+| The formula's Accuracy verdict and the screenshot's visual cross-check disagree with each other (per 3.2 guidance, DAX module step 8) | `insight_visual_mismatch` |
+| 3.1's Implementation verdict and 3.2's Accuracy verdict, from the same DAX formula, point in genuinely different directions (per Marking Principle 4 and the 3.1/3.2 guidance — expected on occasion, not a bug, but worth reviewing) | `implementation_accuracy_divergence` |
 | A notebook's embedded saved output disagrees with what the Written Report itself claims (per Python module step 8) | `notebook_output_report_mismatch` |
 | Message content pattern-matches a different component type than what Haiku classified it as (e.g. contains `CALCULATE(`/`RELATED(` but classified as something other than `dax_formula`; contains `import pandas`/`` ```python `` but classified as something other than `python_code`) | `possible_component_mismatch` |
 | None of the above | `issue_flag = no` |

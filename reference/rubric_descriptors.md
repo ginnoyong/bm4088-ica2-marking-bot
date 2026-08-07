@@ -43,34 +43,34 @@ Components expected: business problem/challenge; objectives and business impact;
 
 | Band | Range | Descriptor |
 |---|---|---|
-| A | 80–100% | TWO (2) data cleansing activities are well-identified, appropriate, and clearly explained. |
-| B | 70–79% | TWO (2) data cleansing activities are appropriate, with a reasonable explanation, though some may lack depth. |
-| C | 60–69% | Data cleansing activities are performed with minor errors, with explanations that are present but limited. |
-| D | 50–59% | Data cleansing is superficial — only trivial or generic activities are identified, with little or no explanation. |
-| F | 0–49% | Data cleansing activities are largely absent or inappropriate. |
+| A | 80–100% | TWO (2) data cleansing activities are correctly implemented, well-identified, appropriate, and clearly explained. |
+| B | 70–79% | TWO (2) data cleansing activities are implemented as described and appropriate, with a reasonable explanation, though some may lack depth. |
+| C | 60–69% | Data cleansing activities are performed with minor errors or minor discrepancies from the written description, with explanations that are present but limited. |
+| D | 50–59% | Data cleansing is superficial or contains significant discrepancies from the written description — only trivial or generic activities are identified, with little or no explanation. |
+| F | 0–49% | Data cleansing activities are largely absent, inappropriate, or not implemented as described. |
 
 ## 3. Exploratory Data Analysis (5 marks × 4 EDA entries = 20 marks)
 
 Repeats identically for EDA #1, #2, #3, #4 — one hypothesis each. Data communication techniques referenced in the rubric: chart selection principles, colour theory, visual hierarchy, preattentive attributes.
 
-### 3.1 — Visualization effectiveness: chart type, fields, aggregation (weight 2 per entry) — IN SCOPE, conditional on chart config supplied
+### 3.1 — Visualization effectiveness + calculated measure/column (weight 2 per entry) — IN SCOPE, conditional on chart config supplied (and DAX where a calculated field is involved)
 
 | Band | Range | Descriptor |
 |---|---|---|
-| A | 80–100% | The visualization is effective — chart type, fields, and aggregation combine to test the hypothesis clearly and convincingly. |
-| B | 70–79% | The visualization uses acceptable chart type, fields, and aggregation to test the hypothesis, though some choices may not be optimal. |
-| C | 60–69% | The visualization partially tests the hypothesis, with minor issues in chart type, fields, or aggregation. |
-| D | 50–59% | The visualization is unable to test the hypothesis, with significant errors or misalignments in chart type, fields, or aggregation. |
+| A | 80–100% | The visualization is effective — chart type, fields, and aggregation combine to test the hypothesis clearly and convincingly. Where applicable, the calculated measure or column is correctly implemented and clearly described. |
+| B | 70–79% | The visualization uses acceptable chart type, fields, and aggregation to test the hypothesis, though some choices may not be optimal. Where applicable, the calculated measure or column is correctly implemented and adequately described. |
+| C | 60–69% | The visualization partially tests the hypothesis, with minor issues in chart type, fields, or aggregation. Where applicable, the calculated measure or column is present but may contain minor errors or is limited in description. |
+| D | 50–59% | The visualization is unable to test the hypothesis, with significant errors or misalignments in chart type, fields, or aggregation. Where applicable, the calculated measure or column contains significant errors or is absent when required. |
 | F | 0–49% | The visualization, insight, and formatting are largely absent or entirely incorrect. |
 
-### 3.2 — Insight accuracy + calculated measure/column (weight 2 per entry) — IN SCOPE, conditional on DAX supplied
+### 3.2 — Insight accuracy (weight 2 per entry) — IN SCOPE, conditional on DAX supplied
 
 | Band | Range | Descriptor |
 |---|---|---|
-| A | 80–100% | The insight is specific, accurate, and meaningfully connected to the business scenario. Where applicable, the calculated measure or column is correctly implemented and clearly described. |
-| B | 70–79% | The insight is accurate and connected to the business scenario, though it may lack depth. Where applicable, the calculated measure or column is correctly implemented and adequately described. |
-| C | 60–69% | The insight is present but generic, with a weak connection to the business scenario. Where applicable, the calculated measure or column is present but may contain minor errors or is limited in description. |
-| D | 50–59% | The insight does not relate to the business scenario or is too vague to be credited. Where applicable, the calculated measure or column contains significant errors or is absent when required. |
+| A | 80–100% | The insight is specific, accurate, and meaningfully connected to the business scenario. |
+| B | 70–79% | The insight is accurate and connected to the business scenario, though it may lack depth. |
+| C | 60–69% | The insight is present but generic, with a weak connection to the business scenario. |
+| D | 50–59% | The insight does not relate to the business scenario or is too vague to be credited. |
 | F | 0–49% | Marks within this band reflect the degree to which any meaningful attempt is present. |
 
 ### 3.3 — Formatting (weight 1 per entry) — IN SCOPE, screenshot mandatory
@@ -89,11 +89,11 @@ Repeats identically for EDA #1, #2, #3, #4 — one hypothesis each. Data communi
 
 | Band | Range | Descriptor |
 |---|---|---|
-| A | 80–100% | Training data construction (selection, aggregation, and any preparation steps) is well-justified and clearly appropriate. Variable/cluster selection is well-justified and clearly appropriate to the business problem. |
-| B | 70–79% | Training data construction is appropriate; justification is adequate but may lack depth. Variable/cluster selection is appropriate, similarly adequate. |
-| C | 60–69% | Training data construction is mostly appropriate; justification is limited. Variable/cluster selection is mostly appropriate with limited justification. |
-| D | 50–59% | Training data construction is weak, or justification is weak. Variable/cluster selection is weak or questionable. |
-| F | 0–49% | Training data construction and/or variable/cluster selection is absent or too weak to be credited. |
+| A | 80–100% | Training data construction (selection, aggregation, and any preparation steps) is well-justified, clearly appropriate, and correctly implemented in the code. Variable/cluster selection is well-justified and clearly appropriate to the business problem. |
+| B | 70–79% | Training data construction is appropriate and implemented as described; justification is adequate but may lack depth. Variable/cluster selection is appropriate, similarly adequate. |
+| C | 60–69% | Training data construction is mostly appropriate, with minor discrepancies between the code and the written description; justification is limited. Variable/cluster selection is mostly appropriate with limited justification. |
+| D | 50–59% | Training data construction is weak, or contains significant discrepancies between the code and the written description, or justification is weak. Variable/cluster selection is weak or questionable. |
+| F | 0–49% | Training data construction and/or variable/cluster selection is absent, too weak to be credited, or not implemented as described. |
 
 ### 4.2 — Target variable / clustering objective: purpose & relevance (weight 3) — IN SCOPE
 
@@ -109,11 +109,11 @@ Repeats identically for EDA #1, #2, #3, #4 — one hypothesis each. Data communi
 
 | Band | Range | Descriptor |
 |---|---|---|
-| A | 80–100% | Appropriate metrics are used; results are accurately interpreted with specific and meaningful implications for business decision-making. |
-| B | 70–79% | Appropriate metrics are used; results are interpreted with reasonable business implications, though the discussion may lack specificity or depth. |
-| C | 60–69% | Metrics are mostly appropriate; business interpretation is superficial or weakly connected to the scenario. |
-| D | 50–59% | Metrics are weak or questionable; there is little meaningful business discussion. |
-| F | 0–49% | Metrics and/or business discussion are absent or too weak to be credited. |
+| A | 80–100% | Appropriate metrics are used and correctly computed as reported; results are accurately interpreted with specific and meaningful implications for business decision-making. |
+| B | 70–79% | Appropriate metrics are used and computed as reported; results are interpreted with reasonable business implications, though the discussion may lack specificity or depth. |
+| C | 60–69% | Metrics are mostly appropriate, with minor discrepancies between the code and the reported figures; business interpretation is superficial or weakly connected to the scenario. |
+| D | 50–59% | Metrics are weak, questionable, or contain significant discrepancies between the code and the reported figures; there is little meaningful business discussion. |
+| F | 0–49% | Metrics and/or business discussion are absent, too weak to be credited, or the reported figures do not match the code. |
 
 ## 5. Data Storytelling (10 marks)
 

@@ -45,11 +45,10 @@ bm4088-ica2-marking-bot/
     ├── data_dictionary.md
     ├── tutor_guide_data_issues.md
     ├── tutor_guide_scenario_analytics_ref.md
-    ├── marking_notes.md
-    └── roster.csv          # staff_id column, one per row — not sent to the model
+    └── marking_notes.md
 ```
 
-Copy the files already built in this project into `prompts/` and `reference/`, and `CLAUDE.md` into the repo root — those are the deliverables from earlier in this conversation, not something Claude Code needs to (re)write. `reference/marking_notes.md` is included in the download too, so nothing needs to be manually copied in from the project files separately. `reference/roster.csv` is a template — fill in your actual staff IDs before deploying; an empty roster means nobody can log in.
+Copy the files already built in this project into `prompts/` and `reference/`, and `CLAUDE.md` into the repo root — those are the deliverables from earlier in this conversation, not something Claude Code needs to (re)write. `reference/marking_notes.md` is included in the download too, so nothing needs to be manually copied in from the project files separately. There's no roster file in the repo at all — the roster lives in a Google Sheet, set up in Section 2 below.
 
 `.gitignore` should contain at minimum:
 ```
@@ -66,16 +65,19 @@ __pycache__/
 3. APIs & Services → Library → also enable **Google Drive API**. This is easy to miss — if you're using `gspread` (the standard Python library for this, and the likely default Claude Code reaches for), it needs both APIs enabled even though you're only writing to a spreadsheet, not touching Drive files directly. Skipping this produces a "Google Drive API has not been enabled" error the first time the app tries to open the sheet, even with correct Sheets-only credentials otherwise.
 4. APIs & Services → Credentials → Create Credentials → **Service Account**. Give it a name (e.g. `ica2-bot-logger`), no special roles needed at the project level.
 5. Open the new service account → Keys → Add Key → **Create new key** → JSON. Download it — this is the credential the app uses to write to Sheets. Keep it out of the repo entirely.
-6. Open your Google Sheet. In the sheet header row, add exactly these columns (matching the schema from earlier in this project):
+6. Open your Google Sheet (the logging one). In the sheet header row, add exactly these columns (matching the schema from earlier in this project):
    `timestamp | staff_id | session_id | scenario_number | component_type | model_used | input_tokens | output_tokens | cache_read_tokens | cache_write_tokens | summary | issue_flag | issue_type`
-7. Share the Sheet with the service account's email address (found in the JSON key file, field `client_email`) — give it **Editor** access, the same way you'd share with a person.
+7. Share the logging Sheet with the service account's email address (found in the JSON key file, field `client_email`) — give it **Editor** access, the same way you'd share with a person.
+8. Create a **second, separate Google Sheet** for the staff roster, named exactly `roster`. In row 1, add a single header: `staff_id`. Add your actual authorized staff IDs in the rows below, one per row.
+9. Share this roster Sheet with the same service account email — **Viewer** access is enough, since the app only ever reads it.
 
-## 3. Login gate: staff ID matched against a roster
+## 3. Login gate: staff ID checked live against the roster Sheet
 
-No access code, no password — just a staff ID checked against a roster. Simplest option, appropriate for an internal tool with a non-public URL; the trade-off is that anyone who knows or guesses a valid staff ID string can get in, since there's no secret involved.
+No access code, no password — just a staff ID checked against the roster Sheet from Section 2. Simplest option, appropriate for an internal tool with a non-public URL; the trade-off is that anyone who knows or guesses a valid staff ID string can get in, since there's no secret involved.
 
-1. `reference/roster.csv` — single column, header `staff_id`, one authorized ID per row. This is the file `auth.py` reads and matches against; the path and filename are fixed, not configurable per deployment. Template included in the project bundle — fill in your actual staff IDs, one per line, before deploying. If you'd rather not commit real staff IDs to git history, keep the GitHub repo private (Streamlit Cloud deploys from private repos fine) rather than restructuring this into a secret.
-2. The app's login screen asks for a staff ID; it must appear in `roster.csv` before the chat loads.
+1. The roster lives entirely in the Google Sheet set up in Section 2 — nothing in the repo itself. `src/auth.py` queries it live via the Sheets API on every login attempt, using the same service account credentials already set up for logging. There's no local file to keep in sync, and no risk of ever committing real staff IDs to git history, since they're never in the repo at all.
+2. The app's login screen asks for a staff ID; it must appear in the "roster" Sheet's `staff_id` column, checked fresh on each attempt (not cached), before the chat loads. Adding or removing a staff member in the Sheet takes effect immediately — no redeploy needed.
+3. Because this is now a live network call rather than a local file read, handle failure explicitly: a Sheets API timeout, rate limit, or misconfigured sharing permission should surface as a clear, retryable error ("couldn't verify access, try again") — never a raw exception, and never something that looks identical to a genuine "not on the roster" denial.
 
 The actual check happens in `src/auth.py`, before the chat interface renders — never inside the conversation itself, per the design decided earlier.
 
@@ -100,21 +102,23 @@ Then run the build in stages — one `/goal` per stage, verifying each before mo
 ```
 /goal Create app.py, requirements.txt, .streamlit/config.toml, and
 src/auth.py. The app must show a login screen first — a single staff
-ID field, checked against reference/roster.csv (column header
-staff_id, one ID per row) — and only render a placeholder chat area
-after a successful match. Running `streamlit run app.py` locally must
-show the login screen, reject an unlisted staff ID with a clear
-message, and show the placeholder chat area after a listed one. Do not
-build the Claude API integration yet.
+ID field, checked live via the Sheets API against a Google Sheet named
+"roster" (column header staff_id, one ID per row, credentials and
+sheet ID from st.secrets), not cached, a fresh check on every login
+attempt — and only render a placeholder chat area after a successful
+match. Handle Sheets API failures (timeout, rate limit, permission
+error) with a clear retryable error message, distinct from a genuine
+"not on the roster" denial — never a raw exception. Running
+`python -m streamlit run app.py` locally must show the login screen, reject an
+unlisted staff ID with a clear message, and show the placeholder chat
+area after a listed one. Do not build the Claude API integration yet.
 ```
 
 **Stage 2 — Claude API client, routing, caching**
 ```
 /goal Create src/model_routing.py and src/api_client.py. Load
 prompts/system_instructions.md and every .md file under reference/ at
-startup (explicitly .md only — reference/roster.csv must never be
-included, since it's auth data, not marking reference material, and
-must never be sent to Claude), concatenate the reference files into
+startup, concatenate the reference files into
 one bundle. Implement
 classify_component_type(marker_input) using one cheap
 claude-haiku-4-5-20251001 call (max_tokens=20, temperature=0) that
@@ -186,9 +190,12 @@ assessment -> possible_prompt_injection; the response stating an
 assessment that differs from what the marker explicitly asked for ->
 marker_override_declined; a response flagging a discrepancy between an
 uploaded chart screenshot and the marker's typed description ->
-screenshot_description_mismatch; a response noting the formula-logic
-verdict and a screenshot's visual cross-check disagree with each other
--> insight_visual_mismatch; a response noting a notebook's embedded
+screenshot_description_mismatch; a response noting the formula's
+accuracy verdict and a screenshot's visual cross-check disagree with
+each other -> insight_visual_mismatch; a response noting 3.1's
+implementation verdict and 3.2's accuracy verdict (from the same DAX
+formula) point in different directions -> implementation_accuracy_divergence;
+a response noting a notebook's embedded
 saved output disagrees with what the Written Report claims ->
 notebook_output_report_mismatch; a regex check (DAX/Python syntax
 patterns) on the marker's input disagreeing with what Haiku classified
@@ -205,7 +212,7 @@ option, don't crash), Google Sheets write failures (log to console,
 don't block the chat response from displaying), and missing/invalid
 secrets on startup (clear error message naming which secret is
 missing, not a raw traceback). Add a requirements.txt covering every
-import actually used in the repo. Confirm `streamlit run app.py` still
+import actually used in the repo. Confirm `python -m streamlit run app.py` still
 works end to end after these changes.
 ```
 
@@ -239,6 +246,10 @@ How to get the best results:
   (report excerpts, DAX formulas, code) - not your own summary of it
 - For chart checks, describe the configuration: chart type, what's on
   axis, values, filters
+- Some recommendations come back Provisional rather than final - that
+  means what's been checked from the report is solid, but it hasn't
+  yet been verified against the actual file. Supplying that (a
+  formula, code, a screenshot) moves it to a confirmed grade
 
 What this bot can't do:
 - Roleplay Presentation and Team Feedback - not part of the Written
@@ -385,14 +396,17 @@ token_uri = "https://oauth2.googleapis.com/token"
 # fill in the rest of the fields from the downloaded JSON key —
 # copy them across, don't retype
 
-GOOGLE_SHEET_ID = "the-id-from-your-sheet-url"
+GOOGLE_SHEET_ID = "the-id-from-your-logging-sheet-url"
+ROSTER_SHEET_ID = "the-id-from-your-roster-sheet-url"
 ```
 
 ## 7. Test locally
 
 ```
-streamlit run app.py
+python -m streamlit run app.py
 ```
+
+On Windows, use this form rather than calling `streamlit.exe` directly — some organization-managed devices block the separate `streamlit.exe` launcher under Device Guard / Windows Defender Application Control, since it's an unsigned executable generated by `pip install`. Routing through `python -m` runs it via the trusted Python interpreter instead and avoids the block.
 
 Walk through: login screen appears → correct credentials get you into the chat → wrong credentials are rejected → the scenario selector is required before sending, no component type selector to fill in → a real Claude response appears, from the correct model for a DAX-formula vs. a problem-statement message → a row appears in the Google Sheet after each turn, `component_type` populated from Haiku's classification → "Start New Submission" clears everything and shows the scenario selector again.
 
@@ -400,7 +414,7 @@ Walk through: login screen appears → correct credentials get you into the chat
 
 1. `git add . && git commit -m "Initial build" && git push` to GitHub (secrets.toml stays local, per `.gitignore` — verify it's not in the commit).
 2. In share.streamlit.io, "New app" → point at your GitHub repo, branch, and `app.py`.
-3. In the app's settings on Streamlit Cloud, **Secrets** — paste in the same content as your local `secrets.toml` (API key, service account, sheet ID). `reference/roster.csv` deploys with the rest of the repo, no secret needed for it.
+3. In the app's settings on Streamlit Cloud, **Secrets** — paste in the same content as your local `secrets.toml` (API key, service account, both sheet IDs). There's no roster file to worry about deploying with the repo — it's entirely in the Google Sheet, already live and shared with the service account from Section 2.
 4. Deploy. Repeat the same walkthrough from Step 7 against the live URL.
 
 ## 9. Final checklist against the design
@@ -413,7 +427,8 @@ Walk through: login screen appears → correct credentials get you into the chat
 - [ ] "Start New Submission" produces a genuinely new `session_id`, not a continuation
 - [ ] The Sheet never contains full verbatim student text, bands, or scores — only the lightweight columns
 - [ ] Editing any file under `reference/` and restarting the app changes the bot's behaviour without touching `prompts/system_instructions.md` or any app code
-- [ ] `reference/roster.csv` is never included in the reference bundle sent to Claude — confirm by checking the actual system prompt content sent (e.g. via a debug print of the assembled `system` parameter) contains none of the staff IDs
+- [ ] Adding a staff ID to the roster Sheet and immediately trying to log in with it works without a redeploy or restart, confirming the check is genuinely live, not cached; removing one denies access on the next login attempt just as quickly
+- [ ] Login fails gracefully with a retryable message if the roster Sheet is temporarily unreachable (e.g. test by briefly revoking the service account's share access to the roster Sheet) — never a raw exception, never indistinguishable from a genuine "not on the roster" denial
 - [ ] The "How to use this bot" help dialog opens from both the login screen and the chat screen, closes cleanly, and never triggers an API call or clears session state
 - [ ] An attached chart screenshot doesn't disturb the cache breakpoint on prior turns — check `cache_read_tokens` is still nonzero on the message right after one containing an image
 - [ ] An uploaded `.ipynb` skips the Haiku classification call (check the log — no extra token cost for that call on notebook-upload turns) and the response only discusses Requirement-4-relevant cells, explicitly declining to comment on any cleansing/EDA cells present in the same file
