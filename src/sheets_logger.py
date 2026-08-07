@@ -89,6 +89,20 @@ _RESPONSE_PATTERNS = [
         ),
     ),
     (
+        # DAX module steps 6-7 / Marking Principle 4: 3.1's implementation
+        # verdict and 3.2's accuracy verdict, drawn from the same formula, are
+        # reported as pointing in different directions — expected per the
+        # module ("these two verdicts can genuinely disagree"), not an error.
+        "implementation_accuracy_divergence",
+        re.compile(
+            r"implementation\s+verdict\s+.{0,60}?(?:diverges?\s+from|disagrees?\s+with|differs?\s+from|contradicts?)\s+.{0,10}?(?:the\s+)?accuracy\s+verdict"
+            r"|accuracy\s+verdict\s+.{0,60}?(?:diverges?\s+from|disagrees?\s+with|differs?\s+from|contradicts?)\s+.{0,10}?(?:the\s+)?implementation\s+verdict"
+            r"|correctly\s+implemented\s+but\s+(?:the\s+)?(?:insight\s+|report'?s\s+)?(?:doesn'?t\s+match|does\s+not\s+match|is\s+a\s+(?:partial\s+)?mismatch)"
+            r"|implementation\s+(?:verdict\s+)?(?:is\s+)?(?:correct|sound)\s+but\s+(?:the\s+)?accuracy\s+verdict\s+is\s+a?\s*(?:partial\s+)?mismatch",
+            re.I,
+        ),
+    ),
+    (
         "relationship_ambiguity",
         re.compile(
             r"flagged?\s+for\s+the\s+marker\s+to\s+verify|verify\s+in\s+manage\s+relationships"

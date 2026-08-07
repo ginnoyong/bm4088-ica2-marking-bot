@@ -20,6 +20,10 @@ HELP_TEXT = """
 - Share the group's problem statement early - several later checks depend on it
 - Paste exact/verbatim text for anything being judged on wording (report excerpts, DAX formulas, code) - not your own summary of it
 - For chart checks, describe the configuration: chart type, what's on axis, values, filters
+- Some recommendations come back Provisional rather than final - that
+  means what's been checked from the report is solid, but it hasn't
+  yet been verified against the actual file. Supplying that (a
+  formula, code, a screenshot) moves it to a confirmed grade
 
 **What this bot can't do:**
 - Roleplay Presentation and Team Feedback - not part of the Written Report
