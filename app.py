@@ -459,11 +459,12 @@ def render_chat() -> None:
 
     st.divider()
 
-    for msg in st.session_state.messages:
-        with st.chat_message(msg["role"]):
-            _render_message_content(msg["content"])
-            if msg.get("debug"):
-                st.caption(msg["debug"])
+    with st.container(height=500, autoscroll=True):
+        for msg in st.session_state.messages:
+            with st.chat_message(msg["role"]):
+                _render_message_content(msg["content"])
+                if msg.get("debug"):
+                    st.caption(msg["debug"])
 
     if st.session_state.get("generating"):
         _render_generation_progress()
