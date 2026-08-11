@@ -145,10 +145,10 @@ This checklist is about presence/absence and count only — not about how well i
 
 | Band | Range | Descriptor |
 |---|---|---|
-| A | 80–100% | Insights are purposefully sequenced to build a coherent narrative toward the conclusion and recommendations. |
-| B | 70–79% | Insights are mostly sequenced toward the conclusion and recommendations, though narrative flow may lack coherence in some areas. |
-| C | 60–69% | Insights are present but loosely sequenced, with limited narrative flow. |
-| D | 50–59% | Insights are listed without meaningful sequencing. |
+| A | 80–100% | Insights are purposefully sequenced to build a coherent narrative toward the conclusion and recommendations. The conclusion is clear, and the two recommendations are specific and genuinely actionable. |
+| B | 70–79% | Insights are mostly sequenced toward the conclusion and recommendations, though narrative flow may lack coherence in some areas. The conclusion and recommendations are clear, though the recommendations may lack some specificity. |
+| C | 60–69% | Insights are present but loosely sequenced, with limited narrative flow. The conclusion and/or recommendations are present but generic, vague, or only partially actionable. |
+| D | 50–59% | Insights are listed without meaningful sequencing. The conclusion and/or recommendations are unclear or not genuinely actionable. |
 | F | 0–49% | Marks within this band reflect the degree to which any meaningful attempt is present. |
 
 ### 5.3 — Design principles applied (weight 4) — IN SCOPE
