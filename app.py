@@ -457,9 +457,7 @@ def render_chat() -> None:
                 _start_new_submission()
                 st.rerun()
 
-    st.divider()
-
-    with st.container(height=500, autoscroll=True):
+    with st.container(height=650, autoscroll=True):
         for msg in st.session_state.messages:
             with st.chat_message(msg["role"]):
                 _render_message_content(msg["content"])
