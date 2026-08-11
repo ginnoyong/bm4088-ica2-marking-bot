@@ -198,6 +198,7 @@ Per-turn logging, kept to a summary/health-monitoring level rather than a full a
 | `model_used` | `claude-opus-4-8` or `claude-sonnet-5` |
 | `input_tokens`, `output_tokens` | From the API response's `usage` object |
 | `cache_read_tokens`, `cache_write_tokens` | From `usage.cache_read_input_tokens` / `usage.cache_creation_input_tokens` |
+| `stop_reason` | The literal value from the API response object (`end_turn`, `max_tokens`, etc.) — log directly, don't derive or interpret it. This is the only reliable way to distinguish a response that was genuinely cut off (`max_tokens`) from one that just happened to be long but finished naturally (`end_turn`) — token count alone can't tell those apart, since a response that used all of `max_tokens` and one that used most of it and then finished are indistinguishable by output length. |
 | `summary` | One-line abstract of what the turn covered, e.g. "Assessed 3.2 EDA#2 insight vs DAX formula" |
 | `issue_flag` | Yes/no — was there a problem with this turn |
 | `issue_type` | Short category, only populated when `issue_flag` is yes — see below |

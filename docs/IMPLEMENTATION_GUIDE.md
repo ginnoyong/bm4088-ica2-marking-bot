@@ -66,7 +66,7 @@ __pycache__/
 4. APIs & Services → Credentials → Create Credentials → **Service Account**. Give it a name (e.g. `ica2-bot-logger`), no special roles needed at the project level.
 5. Open the new service account → Keys → Add Key → **Create new key** → JSON. Download it — this is the credential the app uses to write to Sheets. Keep it out of the repo entirely.
 6. Open your Google Sheet (the logging one). In the sheet header row, add exactly these columns (matching the schema from earlier in this project):
-   `timestamp | staff_id | session_id | scenario_number | component_type | model_used | input_tokens | output_tokens | cache_read_tokens | cache_write_tokens | summary | issue_flag | issue_type`
+   `timestamp | staff_id | session_id | scenario_number | component_type | model_used | input_tokens | output_tokens | cache_read_tokens | cache_write_tokens | stop_reason | summary | issue_flag | issue_type`
 7. Share the logging Sheet with the service account's email address (found in the JSON key file, field `client_email`) — give it **Editor** access, the same way you'd share with a person.
 8. Create a **second, separate Google Sheet** for the staff roster, named exactly `roster`. In row 1, add a single header: `staff_id`. Add your actual authorized staff IDs in the rows below, one per row.
 9. Share this roster Sheet with the same service account email — **Viewer** access is enough, since the app only ever reads it.
@@ -177,7 +177,12 @@ turn to the configured Google Sheet, matching exactly this column
 order:
 timestamp, staff_id, session_id, scenario_number, component_type,
 model_used, input_tokens, output_tokens, cache_read_tokens,
-cache_write_tokens, summary, issue_flag, issue_type. component_type
+cache_write_tokens, stop_reason, summary, issue_flag, issue_type.
+stop_reason is the literal value from the API response object
+(e.g. "end_turn", "max_tokens") — log it directly, don't derive or
+interpret it; a value of "max_tokens" means the response was
+genuinely cut off, distinct from a response that happened to be long
+but finished naturally. component_type
 comes from Stage 2's classify_component_type() output, not a marker
 selection. Derive summary as a short truncation or simple description
 of the turn. Derive issue_flag/issue_type via plain pattern matching
