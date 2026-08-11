@@ -236,7 +236,9 @@ def render_scenario_selector() -> None:
         st.rerun()
 
 
-def _log_turn_safely(component_type: str, model_used: str, usage, marker_input: str, response_text: str) -> None:
+def _log_turn_safely(
+    component_type: str, model_used: str, usage, marker_input: str, response_text: str, stop_reason: str | None
+) -> None:
     """Google Sheets write failures must never block the already-rendered
     chat response — log the failure to console and move on."""
     try:
@@ -251,6 +253,7 @@ def _log_turn_safely(component_type: str, model_used: str, usage, marker_input: 
             usage,
             marker_input,
             response_text,
+            stop_reason,
         )
     except Exception as e:
         print(f"[sheets_logger] failed to log turn: {e}")
@@ -384,7 +387,8 @@ def _finalize_generation() -> None:
         )
         update_scorecard(st.session_state.scorecard, response_text)
         _log_turn_safely(
-            result["component_type"], result["model"], result["usage"], _extract_text(user_message), response_text
+            result["component_type"], result["model"], result["usage"], _extract_text(user_message), response_text,
+            result["stop_reason"],
         )
 
     st.session_state.generating = False

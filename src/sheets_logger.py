@@ -27,6 +27,7 @@ COLUMNS = [
     "output_tokens",
     "cache_read_tokens",
     "cache_write_tokens",
+    "stop_reason",
     "summary",
     "issue_flag",
     "issue_type",
@@ -180,6 +181,7 @@ def build_row(
     usage,
     marker_input: str,
     response_text: str,
+    stop_reason: str | None,
 ) -> list:
     issue_flag, issue_type = classify_issue(response_text, marker_input, component_type)
     return [
@@ -193,6 +195,7 @@ def build_row(
         usage.output_tokens,
         usage.cache_read_input_tokens,
         usage.cache_creation_input_tokens,
+        stop_reason,
         derive_summary(marker_input, component_type),
         issue_flag,
         issue_type,
@@ -209,8 +212,10 @@ def log_turn(
     usage,
     marker_input: str,
     response_text: str,
+    stop_reason: str | None,
 ) -> None:
     row = build_row(
-        staff_id, session_id, scenario_number, component_type, model_used, usage, marker_input, response_text
+        staff_id, session_id, scenario_number, component_type, model_used, usage, marker_input, response_text,
+        stop_reason,
     )
     worksheet.append_row(row, value_input_option="RAW")

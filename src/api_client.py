@@ -164,6 +164,7 @@ def send_marker_message(
         "component_type": component_type,
         "model": request["model"],
         "response": response,
+        "stop_reason": response.stop_reason,
     }
 
 
