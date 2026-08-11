@@ -1,6 +1,6 @@
 # Implementation Guide — BM4088 ICA2 Marking Bot
 
-Builds the bot designed across the rest of this project: Claude API (Sonnet/Opus routing, prompt caching), Streamlit front end hosted via GitHub on Streamlit Community Cloud, staff login gate, Google Sheets logging. Built using Claude Code's `/goal` feature to do the actual engineering, with you supplying accounts, credentials, and verification.
+Builds the bot designed across the rest of this project: Claude API (Sonnet-only routing, prompt caching — see `docs/implementation_notes.md`'s Model routing section for why Opus was tried and dropped), Streamlit front end hosted via GitHub on Streamlit Community Cloud, staff login gate, Google Sheets logging. Built using Claude Code's `/goal` feature to do the actual engineering, with you supplying accounts, credentials, and verification.
 
 ## 0. What you need before starting
 
@@ -126,8 +126,11 @@ returns exactly one of: problem_statement, hypotheses,
 schema_description, cleansing, dax_formula, eda_chart_config,
 python_code, predictive_analytics_text, report_structure, conclusion,
 other. Implement select_model(component_type) returning
-claude-opus-4-8 for "dax_formula" and "python_code",
-claude-sonnet-5 otherwise. Implement a function that classifies the
+claude-sonnet-5 for every category, including "dax_formula" and
+"python_code" (Opus was tried for these and dropped after real usage
+data — see docs/implementation_notes.md's Model routing section;
+classify_component_type() still distinguishes them for log tracking
+even though routing no longer differs). Implement a function that classifies the
 marker's message first, then builds a Messages API request with
 max_tokens=8192 (this bot's required output format — dependencies,
 relationship assumptions, verdict, mandatory justification, scorecard
@@ -142,7 +145,7 @@ call) and prints the classification, the model used, the response, and
 usage including cache_read_input_tokens and cache_creation_input_tokens,
 confirming the second identical call within 5 minutes shows a cache
 read. Test with an obvious DAX formula input and confirm it classifies
-as dax_formula and routes to Opus.
+as dax_formula and routes to Sonnet.
 ```
 
 **Stage 3 — chat UI**
@@ -158,9 +161,9 @@ the marker. Add a "Start New Submission" button that clears all
 conversation state, including the locked scenario number, and returns
 to the scenario selector. Running the app locally: log in → select a
 scenario (now locked) → send a DAX-formula message and confirm the
-model actually used (visible in logs or a debug indicator) is Opus →
+model actually used (visible in logs or a debug indicator) is Sonnet →
 send a plain problem-statement message in the same session and confirm
-it routes to Sonnet, scenario number unchanged → click "Start New
+it also routes to Sonnet, scenario number unchanged → click "Start New
 Submission" → scenario selector reappears and must be set again.
 ```
 
@@ -326,7 +329,8 @@ embedded outputs are distinguishable from each other. If a .ipynb is
 attached on a turn, skip Stage 2's classify_component_type() call
 entirely and set component_type = "python_code" directly — the file
 extension is a certain signal, per docs/implementation_notes.md. This
-still routes to Opus per the existing model_routing rules, no changes
+still routes to Sonnet per the existing model_routing rules (all
+traffic currently routes to Sonnet — see implementation_notes.md), no changes
 needed there. Running the app locally: upload a sample .ipynb
 containing a mix of cleansing, EDA, and a predictive-analytics section
 with a saved output, with minimal accompanying text, and confirm the
@@ -425,7 +429,7 @@ Walk through: login screen appears → correct credentials get you into the chat
 ## 9. Final checklist against the design
 
 - [ ] Login blocks access before any API call is made — confirm by checking the Sheet has zero rows from a rejected login attempt
-- [ ] DAX formula and Python code messages route to Opus; everything else to Sonnet — confirm via the `model_used` column
+- [ ] All messages route to Sonnet, including DAX formula and Python code — confirm via the `model_used` column (Opus is not currently in use; see `implementation_notes.md`'s Model routing section if reverting)
 - [ ] The Haiku classification call itself uses `temperature=0` and completes before the main call, not in parallel with it (routing depends on its result)
 - [ ] A second identical-ish message within 5 minutes shows nonzero `cache_read_tokens`
 - [ ] Every API call is sent with `temperature=0`

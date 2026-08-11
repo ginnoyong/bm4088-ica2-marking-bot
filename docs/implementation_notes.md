@@ -34,9 +34,11 @@ Behaviour: clicking it starts a genuinely new conversation (fresh message array,
 
 | Trigger | Model |
 |---|---|
-| Classified as DAX formula content | Opus (`claude-opus-4-8`) |
-| Classified as Python code content | Opus (`claude-opus-4-8`) |
-| Everything else (problem statement, hypotheses, schema description, cleansing narrative, chart config without DAX, chart formatting, predictive analytics text, report structure, dashboard design, conclusion, general Q&A, the opening orientation) | Sonnet (`claude-sonnet-5`) |
+| Everything, all `component_type` values including DAX formula and Python code content | Sonnet (`claude-sonnet-5`) |
+
+**All traffic currently routes to Sonnet — Opus is not in active use.** This was changed from a DAX/Python-to-Opus split after real usage data showed two things: Opus cost 3.7x more per message than Sonnet while being only 20% of volume yet ~48% of total cost, and — more decisively — 64% of all cache misses were caused by Sonnet↔Opus switching specifically, since Anthropic's prompt cache is scoped per-model and a switch always misses regardless of TTL. Removing the switch entirely was expected to raise the overall cache hit rate past the 79.7% baseline measured with the split in place, not just save the direct per-token Opus premium.
+
+**This is being trialled, not assumed safe by default — DAX dependency-chain and Python logic-check reasoning haven't been directly verified as equivalent quality on Sonnet vs. Opus.** Monitor via the existing `issue_flag`/`issue_type` log columns, specifically `possible_component_mismatch` and `implementation_accuracy_divergence`, and spot-check a handful of DAX/Python responses against previously-trusted Opus output. `classify_component_type()` still distinguishes `dax_formula` and `python_code` from everything else — this was deliberately left unchanged so reverting is a one-line change to `select_model()`, not a rebuild of the classification logic, and so these categories stay separately trackable in the log regardless of which model handles them.
 
 **Routing is automatic, via a cheap Haiku pre-classification call — no marker-facing selector.** An earlier version of this design had the marker pick a component type before each message; that turned out to create its own failure mode (mis-selection, requiring a pre-send warning and a log flag to catch it). Since the bot already recognises what kind of input it's looking at from content alone once a model is processing it, the natural fix is to make that recognition happen *before* the real call too, using a fast, cheap model purely for classification — the same shape as Claude Code's own `/goal` evaluator: a lightweight model makes the judgment call, a stronger model does the work.
 
@@ -63,8 +65,9 @@ def classify_component_type(client: anthropic.Anthropic, marker_input: str) -> s
     return response.content[0].text.strip()
 
 def select_model(component_type: str) -> str:
-    if component_type in ("dax_formula", "python_code"):
-        return "claude-opus-4-8"
+    # Sonnet-only trial (see Model routing above) — was:
+    # return "claude-opus-4-8" if component_type in
+    # ("dax_formula", "python_code") else "claude-sonnet-5"
     return "claude-sonnet-5"
 ```
 
