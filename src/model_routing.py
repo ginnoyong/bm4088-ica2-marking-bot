@@ -51,7 +51,8 @@ def classify_component_type(client: anthropic.Anthropic, marker_input: str) -> s
 
 
 def select_model(component_type: str) -> str:
-    """dax_formula and python_code go to Opus; everything else to Sonnet."""
-    if component_type in ("dax_formula", "python_code"):
-        return OPUS_MODEL
+    """Sonnet-only trial (see docs/implementation_notes.md's Model routing
+    section) — was: OPUS_MODEL if component_type in
+    ("dax_formula", "python_code") else SONNET_MODEL.
+    """
     return SONNET_MODEL

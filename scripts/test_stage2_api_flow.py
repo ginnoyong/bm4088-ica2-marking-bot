@@ -5,7 +5,8 @@ Claude API. Not part of the app; run manually with:
 
 Sends an obvious DAX-formula message twice (same content, no history) and
 checks:
-  - it classifies as "dax_formula" and routes to Opus
+  - it classifies as "dax_formula" and routes to Sonnet (Sonnet-only
+    trial — see docs/implementation_notes.md's Model routing section)
   - the second call, within 5 minutes of the first, shows a nonzero
     cache_read_input_tokens (the system prompt / reference bundle blocks
     cached from the first call)
@@ -17,7 +18,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from src.api_client import get_client, load_reference_bundle, load_system_instructions, send_marker_message
-from src.model_routing import OPUS_MODEL
+from src.model_routing import SONNET_MODEL
 
 DAX_MESSAGE = (
     "Can you check this DAX formula for the Total Sales measure?\n\n"
@@ -56,10 +57,10 @@ def main():
     assert first_result["component_type"] == "dax_formula", (
         f"expected dax_formula, got {first_result['component_type']!r}"
     )
-    assert first_result["model"] == OPUS_MODEL, (
-        f"expected {OPUS_MODEL}, got {first_result['model']!r}"
+    assert first_result["model"] == SONNET_MODEL, (
+        f"expected {SONNET_MODEL}, got {first_result['model']!r}"
     )
-    print("\nPASS: DAX formula input classified as dax_formula and routed to Opus")
+    print("\nPASS: DAX formula input classified as dax_formula and routed to Sonnet")
 
     second_result, second_usage = run_once(client, instructions, reference_bundle, "Call 2 (should hit cache)")
     assert second_usage.cache_read_input_tokens > 0, (
