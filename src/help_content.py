@@ -20,6 +20,10 @@ HELP_TEXT = """
 - Share the group's problem statement early - several later checks depend on it
 - Paste exact/verbatim text for anything being judged on wording (report excerpts, DAX formulas, code) - not your own summary of it
 - For chart checks, describe the configuration: chart type, what's on axis, values, filters
+- For the four EDA entries, work through one at a time - its report
+  text, then its screenshot, before moving to the next. This gets
+  faster, more manageable responses than pasting all four texts first
+  and all four screenshots afterward.
 - Some recommendations come back Provisional rather than final - that
   means what's been checked from the report is solid, but it hasn't
   yet been verified against the actual file. Supplying that (a
