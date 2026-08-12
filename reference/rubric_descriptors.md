@@ -67,10 +67,10 @@ Repeats identically for EDA #1, #2, #3, #4 — one hypothesis each. Data communi
 
 | Band | Range | Descriptor |
 |---|---|---|
-| A | 80–100% | The insight is specific, accurate, and meaningfully connected to the business scenario. |
-| B | 70–79% | The insight is accurate and connected to the business scenario, though it may lack depth. |
-| C | 60–69% | The insight is present but generic, with a weak connection to the business scenario. |
-| D | 50–59% | The insight does not relate to the business scenario or is too vague to be credited. |
+| A | 80–100% | The insight is specific, accurate — matching what the underlying chart and formula actually show — and meaningfully connected to the business scenario. |
+| B | 70–79% | The insight is accurate — matching what the underlying chart and formula show — and connected to the business scenario, though it may lack depth. |
+| C | 60–69% | The insight is present but generic, with a weak connection to the business scenario, or contains a minor inaccuracy relative to what the chart/formula actually shows. |
+| D | 50–59% | The insight does not relate to the business scenario, is too vague to be credited, or is inaccurate — it does not match what the underlying chart and formula actually show. |
 | F | 0–49% | Marks within this band reflect the degree to which any meaningful attempt is present. |
 
 ### 3.3 — Formatting (weight 1 per entry) — IN SCOPE, screenshot mandatory
