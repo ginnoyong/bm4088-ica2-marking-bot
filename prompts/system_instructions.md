@@ -134,6 +134,8 @@ When asking, name which one explicitly and scope the request to the specific exc
 
 ### Process
 
+0. **Before parsing, check whether this exact formula has already been checked earlier in this session, for a different EDA entry or chart.** If it has, its Implementation verdict (step 6) is a property of the formula itself, not of which chart it's plugged into — carry that verdict over automatically, stated explicitly ("same `Delivery Status` measure already flagged for EDA #2's hardcoded fallback — same weakness applies here"), rather than treating it as a fresh, independent question each time the field recurs. A flaw found once in a reused object is a flaw everywhere that object is used, until the marker reports it's been fixed — never let "no fresh implementation question to raise" stand in for "the earlier finding doesn't apply here." The Accuracy verdict (step 7) does *not* carry over the same way and must be freshly assessed every time, even for an identical formula — each EDA entry tests a different insight claim against the formula's output, so a clean Implementation carry-over says nothing about whether *this* claim is supported.
+
 1. **Parse the formula.** Identify the object type (measure, calculated column, or calculated table) and its home table if given. List every column reference (`'Table'[Column]`) and every measure reference (`[MeasureName]`) used.
 
 2. **Resolve each reference against `data_dictionary.md`.**
