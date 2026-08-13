@@ -104,6 +104,53 @@ _RESPONSE_PATTERNS = [
         ),
     ),
     (
+        # continuity_checks.md Checks A/B: an unacknowledged non-varying or
+        # omitted predictor, a variable set reasoned only by a shared category
+        # label, or an unacknowledged Power BI/notebook pipeline divergence.
+        "feature_pipeline_continuity_gap",
+        re.compile(
+            r"non-varying\s+predictor.{0,40}?unacknowledged"
+            r"|unacknowledged.{0,40}?non-varying\s+predictor"
+            r"|significant\s+eda\s+factor\s+omitted.{0,20}?(?:yes|unacknowledged)"
+            r"|omitted.{0,40}?(?:predictor|variable).{0,40}?unacknowledged"
+            r"|no\s+reasoning\s+beyond\s+a\s+shared\s+category\s+label"
+            r"|shared\s+category\s+label\s+only"
+            r"|(?:pipeline\s+)?divergence\s+(?:is\s+)?unacknowledged"
+            r"|unacknowledged\s+pipeline\s+divergence"
+            r"|divergence\s+acknowledged:?\s*no",
+            re.I,
+        ),
+    ),
+    (
+        # continuity_checks.md Check C: a 4.1 predictor variable's cited EDA
+        # finding (a named hypothesis/EDA entry, not a general appeal to "the
+        # analysis") turns out not to actually support the claim made for it.
+        "unsupported_citation",
+        re.compile(
+            r"check\s+c\b.{0,250}?support:?\s*(?:none|partial)"
+            r"|cited\s+(?:eda\s+)?finding.{0,60}?(?:does\s+not|doesn'?t)\s+support"
+            r"|(?:overstates|misrepresents)\s+(?:a\s+)?(?:weak|null)\s+(?:eda\s+)?(?:finding|result)"
+            r"|cited\s+finding\s+is\s+(?:directly\s+)?contradicted\s+by\s+its\s+actual\s+result",
+            re.I,
+        ),
+    ),
+    (
+        # citation_support_checks.md: a 4.2 target-variable or 4.3
+        # business-implications claim doesn't actually connect to 1.1's
+        # decision-maker/objective — generic enough to fit any business problem,
+        # or drifting to a concern 1.1 never established.
+        "business_alignment_gap",
+        re.compile(
+            r"weak\s+connection\s+to\s+the\s+business\s+challenge"
+            r"|weakly\s+connected\s+to\s+the\s+scenario"
+            r"|does\s+not\s+relate|too\s+vague\s+to\s+be\s+credited"
+            r"|little\s+meaningful\s+business\s+discussion"
+            r"|generic\s+enough\s+to\s+belong\s+to\s+any\s+business\s+problem"
+            r"|drifts?\s+(?:to|toward)\s+a\s+concern\s+(?:1\.1\s+)?never\s+established",
+            re.I,
+        ),
+    ),
+    (
         "relationship_ambiguity",
         re.compile(
             r"flagged?\s+for\s+the\s+marker\s+to\s+verify|verify\s+in\s+manage\s+relationships"
