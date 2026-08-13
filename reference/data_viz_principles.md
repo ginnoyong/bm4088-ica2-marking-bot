@@ -55,13 +55,13 @@ The taught rationale underlying the above three techniques:
 Source: W7S22 (Creating Dashboard for Data Storytelling). This is the *dashboard design* half of 5.3's descriptor — the report-wide equivalent of the chart-level content above. Do not re-check chart type here (3.1's job) or per-chart formatting (3.3's job) — this is about the report as a whole: layout, colour consistency across pages, and simplicity at the report level.
 
 **Positive attributes:**
-- Use only the most important chart per page — avoid cluttering with too many visuals
+- **A page carrying multiple visuals — the normal case for a dashboard — should group visuals that are coherently related: serving one shared question, theme, or part of the narrative, not an arbitrary or unrelated collection sharing a page for space reasons alone.** "Dashboard" itself means multiple coordinated visuals on one interface — that's the design task this half of 5.3 is actually assessing, not something to be avoided. For this assignment specifically, the structure requires 4 EDA visualizations plus the predictive analytics outcome — 5 required pieces of content — fitting into only 3 middle pages (5-page limit, minus the First Page, minus the Conclusion & Recommendations page); at least two of the three middle pages will necessarily carry more than one required visual, and no compliant layout can avoid this. **Never treat a page carrying multiple required visuals as a deviation on its own — that would penalise the exact thing "dashboard design" asks for.** What's actually assessable is the *coherence of the grouping*: do the visuals sharing a page work together (one finding setting up another, a shared theme, a natural sequence), or do they read as arbitrary or crowded regardless of visual tidiness. Treat strong, deliberate grouping as a plus to credit; treat weak or incidental grouping as neutral, not as a flaw to penalise, since some grouping was always going to be necessary and the group still had to choose *something*.
 - Keep a clean and compact layout
 - Select a suitable, *consistent* colour theme — a limited set of colours, applied consistently across pages, not varying styling page to page
 - Keep it simple and easy to use
 
 **Negative attributes:**
-- Cluttering the dashboard with unimportant information or too many charts
+- Cluttering the dashboard with unimportant, decorative, or unrelated information — not "more than one chart" on its own, but content that doesn't serve the page's shared theme or that's present for filler rather than purpose
 - Over-designed or too flashy graphics/layout
 - Overuse of colours, or colour used only for decoration with no meaning attached to it
 - Too much complexity — metrics or visuals that don't clearly serve the message

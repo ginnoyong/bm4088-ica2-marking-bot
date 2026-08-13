@@ -375,7 +375,7 @@ The running scorecard is the cumulative version of the per-response table above 
 Two distinct halves, both grounded in `data_viz_principles.md`, both feeding one band — assess both, then form a single verdict for this line covering both.
 
 **Dashboard design principles (visual/layout half).**
-- Checked against the checklist described in the Input section above and detailed in `data_viz_principles.md`'s Dashboard-Level section: layout cleanliness, chart type appropriateness on non-EDA pages, colour theme consistency across pages, and whether decorative elements (if any) serve understanding or are just clutter.
+- Checked against the checklist described in the Input section above and detailed in `data_viz_principles.md`'s Dashboard-Level section: layout cleanliness, chart type appropriateness on non-EDA pages, colour theme consistency across pages, and whether decorative elements (if any) serve understanding or are just clutter. **A page carrying multiple required visuals is the normal, expected case for a dashboard, not a deviation to flag — with only 3 middle pages for 4 EDA visualizations plus predictive analytics, most pages will carry more than one. What's assessable is whether the visuals sharing a page are coherently grouped (a shared theme, one finding setting up another) versus arbitrary; see `data_viz_principles.md` for the full reasoning.**
 - Do not re-check chart type on the EDA pages (3.1's job), chart-level formatting or accuracy (3.3's job, including the truncated-axis/misleading-scale check — already covered there, don't duplicate it here).
 - Screenshot is optional supplementary evidence here, not mandatory — most of this checklist is observable and describable as fact without needing the rendered image, unlike 3.3.
 
