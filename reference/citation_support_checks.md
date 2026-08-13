@@ -1,45 +1,40 @@
-# Citation-Support Check — For 4.2 and 4.3
+# Business-Alignment Check — For 4.2 and 4.3
 
 ## Companion to Criteria 4.2 and 4.3 · For Internal Use Only · DRAFT
 
-**Status: drafted as a starting point, not yet reviewed by the marker who identified this gap.** Her own "Adjacent, not covered here" note in `continuity_checks.md` flagged this for 4.2; the identical structure was found to apply to 4.3 during review. She has been asked to build or refine this herself, given her demonstrated judgment on the 4.1 checks — this draft exists so there's a concrete starting point to react to, not to pre-empt her own version. Treat as provisional until she's reviewed it.
+**Status: drafted as a starting point, not yet reviewed by the marker who identified the underlying gap.** Her original "Adjacent, not covered here" note flagged an unverified-citation risk in 4.2. On review, the citation-support mechanism for predictor-variable citations turned out to belong to 4.1 instead (see `continuity_checks.md`'s Check C) — 4.1 is what actually cites specific EDA findings, since those are the predictor variables the EDA explores. 4.2 and 4.3 don't typically cite anything specific; what they need is a check against a different reference point entirely: does the claim they're making actually connect to the business problem established in 1.1. This file is what's left once that reallocation happened. Treat as provisional until she's reviewed it.
 
 **This file adds one check; it does not replace or amend anything.** `rubric_descriptors.md` remains the sole source of band text and weights, `marking_notes.md` remains authoritative for marking principles, and `system_instructions.md` remains authoritative for per-line workflow. Every finding below lands inside 4.2's or 4.3's own existing band language — no new penalty category.
 
-The check exists because a citation can be accurate and still not support anything. A report that writes "per H2, VIP customers show distinct behaviour, supporting this target variable's relevance" has correctly referenced H2 — but if H2 actually returned a null or weak result, the citation doesn't establish what the sentence claims it establishes. Reading the 4.2/4.3 text on its own terms cannot detect that; only checking what the cited finding actually found can.
+**Why 1.1, not 3.2, for both of these lines.** 4.2's descriptor language is "directly tied to the *business challenge*" — the target variable's relevance is a business-context question, not an EDA-evidence question; what predictor variables the EDA examined is a different concern that belongs to 4.1. 4.3's descriptor language is "specific and meaningful implications for *business decision-making*" — again a business-context question about the model's results, not about which hypothesis motivated anything. Both lines are ultimately asking the same thing: does this connect back to the actual decision-maker and objective the group set up in 1.1, or does it drift into something generic or unconnected to that.
+
+The check exists because a claim can be well-written and still not actually connect to anything specific. A target-variable justification or a business-implications discussion can use fluent, plausible business language that would read exactly the same regardless of which business problem the group had actually been assigned — which means it hasn't really engaged with *this* decision-maker's *specific* need, even though nothing in it is technically false. Reading either section on its own terms cannot detect that; only checking it against 1.1's actual, specific problem statement can.
 
 ---
 
 ## Relationship to `system_instructions.md` §5.2
 
-5.2 already applies this exact discipline to the conclusion — cross-referencing its claims against what 3.2/4.x actually found, not judging the conclusion's plausibility in isolation. This check is the same discipline applied one level earlier, to 4.2's and 4.3's own justification text specifically, not just the final conclusion.
+5.2 already applies a structurally similar discipline to the conclusion — cross-referencing its claims against what earlier sections actually found, not judging plausibility in isolation. This check applies the same underlying discipline earlier in the report, to 4.2's and 4.3's own text — but against a different reference point (1.1's problem statement, not 3.2's findings), since these two lines are about business-context alignment, not the same kind of factual-support check 5.2 or 4.1's Check C need.
 
 ---
 
 ## When this check runs
 
-| Requires in the case file | If only one side is present |
-|---|---|
-| The 4.2 or 4.3 text making the citation, **and** the cited finding's actual established result (from 3.2 or elsewhere in 4.x, already in the case file, or the Written Report's own text for that finding if not yet assessed) | The line stays Provisional; Status names the specific citation not yet verified |
+Requires 1.1's problem statement (business problem, decision-maker, objective, success metric) already established in the case file — reuse it, don't re-ask if it's already been gathered for 1.1's own assessment. If 1.1 hasn't been assessed yet in this session, ask for it, verbatim, before running this check on 4.2 or 4.3.
 
-**This check only fires when a specific citation is actually made** — a reference to a named hypothesis, EDA entry, or specific finding, not a general appeal to "the analysis" or "the data." A claim supported by sound general business reasoning, with no specific citation at all, is not what this check is for — don't penalise the absence of a citation; that's a different concern belonging to 4.2's/4.3's existing "clearly and convincingly explained" language on its own terms, not this check.
+This check does not require an explicit citation to run — unlike 4.1's Check C, it applies to the discussion generally, since 4.2 and 4.3 typically don't cite anything specific in the first place. It's checking connection, not citation accuracy.
 
 ---
 
 ## The check
 
-For each specific citation found in the 4.2 or 4.3 text:
+1. **What does 4.2 (or 4.3) actually claim serves the business, and for whom?** State it plainly, in one sentence, before checking anything.
+2. **Check this against 1.1's own decision-maker, objective, and success metric.** Does the claim serve the same decision-maker and objective 1.1 established, or does it drift toward a different business concern 1.1 never raised?
+3. **Would this text read the same way regardless of which business problem the group had been assigned?** If the language is generic enough to attach to almost any target variable or almost any model's results, it hasn't actually connected to *this* decision-maker's specific need.
 
-1. **Identify what the citation claims the finding shows.** State it plainly, in one sentence, before checking anything.
-2. **Check the cited finding's actual, established result** — reuse whatever's already in the case file (3.2's verdict, an earlier 4.x assessment) rather than re-deriving it. If the specific finding cited hasn't been assessed yet, ask for the Written Report's own text for it, verbatim, the same way 5.2's conclusion-support check does.
-3. **Does the actual finding support the claim, partially support it, or not support it at all?**
-   - Full support: the finding genuinely shows what the citation says it shows.
-   - Partial support: the finding shows something related but weaker, more qualified, or narrower than the citation implies — and this may still be acceptable if the report itself acknowledges the qualification (see guard rail below).
-   - No support: the finding is null, contradicts the claim, or shows something substantively different from what's being cited it for.
+### Guard — this is not requiring a literal re-citation of 1.1
 
-### Guard — acknowledged weakness is not a failure
-
-**A citation to a weak or mixed finding is not automatically a problem — the fault is specifically unacknowledged misrepresentation, not citing anything short of a strong result.** "While H2 showed only a modest effect, it's directionally consistent with..." correctly represents a weak finding as weak and still uses it as legitimate context. That is not what this check penalises. What it penalises is a citation that reads as stronger, more decisive, or more supportive than the actual finding was, with no acknowledgement of the gap.
+**The connection can be implicit and still be genuine — the check is for actual alignment, not for restating 1.1's wording.** A 4.2 or 4.3 passage that clearly serves the same decision-maker and objective 1.1 established, without literally repeating 1.1's language, passes this check. What fails it is a real disconnect: language that could belong to any business problem, or that addresses something 1.1 never established as the actual need.
 
 ---
 
@@ -49,11 +44,11 @@ No new penalty. Route each finding to the descriptor wording it already matches:
 
 | Finding | Line | Descriptor language | Band signal |
 |---|---|---|---|
-| Citation accurately represents a weak or null finding as weak/null, still used as partial support | 4.2 or 4.3 | (no issue — full credit for the citation itself; band reflects the underlying justification/discussion quality on its own terms) | — |
-| Citation overstates a weak/null finding as if it were strong, unacknowledged | 4.2 | "generic," "weak connection to the business challenge" | C or D |
-| Citation overstates a weak/null finding as if it were strong, unacknowledged | 4.3 | "superficial," "weakly connected to the scenario," or "little meaningful business discussion" | C or D |
-| Citation directly contradicts the cited finding's actual result | 4.2 | "does not relate," "too vague to be credited" | D |
-| Citation directly contradicts the cited finding's actual result | 4.3 | "little meaningful business discussion" | D |
+| Claim genuinely serves 1.1's decision-maker and objective, even without literal re-citation | 4.2 or 4.3 | (no issue) | — |
+| Language generic enough to belong to any business problem | 4.2 | "generic," "weak connection to the business challenge" | C |
+| Language generic enough to belong to any business problem | 4.3 | "superficial," "weakly connected to the scenario" | C |
+| Claim drifts to a concern 1.1 never established, or contradicts 1.1's stated objective | 4.2 | "does not relate," "too vague to be credited" | D |
+| Claim drifts to a concern 1.1 never established, or contradicts 1.1's stated objective | 4.3 | "little meaningful business discussion" | D |
 
 ---
 
@@ -63,7 +58,9 @@ Report as dense itemized evidence, per the Output format compression rule — th
 
 Suggested form:
 
-> **Citation check** — "H2 supports VIP-tier relevance" claimed · H2's actual verdict: null (per 3.2) · acknowledged in text: no · support: none
+> **4.2 alignment check** — target's stated relevance: "predicting VIP churn risk supports retention" · 1.1's decision-maker: marketing team, objective: improve order value via targeting · alignment: consistent
+>
+> **4.3 alignment check** — decision stated: "prioritise retention outreach for high-risk segments" · 1.1's decision-maker: marketing team, objective: improve order value via targeting · alignment: consistent, same decision-maker and objective
 
 Then state the band consequence in prose, citing the descriptor language from the table above.
 
@@ -71,4 +68,4 @@ Then state the band consequence in prose, citing the descriptor language from th
 
 ## Open question for the marker who flagged this
 
-Whether this should live as its own file (as drafted here) or be folded into a single companion file spanning 4.1–4.3 together, given the underlying discipline (verify a claim against what actually happened, don't grade the claim's plausibility alone) is the same principle in both cases, just applied to different citation targets. Her call.
+Whether this should live as its own file (as drafted here) or be folded into a single companion file spanning 4.1–4.3 together, given the underlying discipline across all three files (verify a claim against what was actually established elsewhere, don't grade plausibility alone) is the same principle throughout, just applied against different reference points per line. Her call.

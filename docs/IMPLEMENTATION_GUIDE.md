@@ -208,8 +208,11 @@ implementation verdict and 3.2's accuracy verdict (from the same DAX
 formula) point in different directions -> implementation_accuracy_divergence;
 a response noting a feature or pipeline continuity gap for 4.1, per
 continuity_checks.md -> feature_pipeline_continuity_gap; a response
-noting a citation in 4.2 or 4.3 doesn't actually support what it's
-cited for, per citation_support_checks.md -> unsupported_citation;
+noting a cited EDA finding in 4.1 doesn't actually support the
+predictor variable it's cited for, per continuity_checks.md's Check C
+-> unsupported_citation; a response noting a 4.2 or 4.3 claim doesn't
+actually connect to 1.1's decision-maker/objective, per
+citation_support_checks.md -> business_alignment_gap;
 a response noting a notebook's embedded
 saved output disagrees with what the Written Report claims ->
 notebook_output_report_mismatch; a regex check (DAX/Python syntax

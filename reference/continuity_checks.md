@@ -2,9 +2,9 @@
 
 ## Companion to Criterion 4.1 · For Internal Use Only
 
-**This file adds two checks; it does not replace or amend anything.** `rubric_descriptors.md` remains the sole source of band text and weights, `marking_notes.md` remains authoritative for marking principles, and `system_instructions.md` remains authoritative for per-line workflow. Nothing here introduces a new criterion, a new weight, or a penalty outside the existing descriptors — every finding below lands inside 4.1's own band language.
+**This file adds three checks; it does not replace or amend anything.** `rubric_descriptors.md` remains the sole source of band text and weights, `marking_notes.md` remains authoritative for marking principles, and `system_instructions.md` remains authoritative for per-line workflow. Nothing here introduces a new criterion, a new weight, or a penalty outside the existing descriptors — every finding below lands inside 4.1's own band language.
 
-Both checks exist because a feature set can be described in fluent, plausible prose and still have no logical continuity with the analysis that preceded it. Reading the justification on its own terms cannot detect that; only comparing it against the group's own earlier work can.
+All three checks exist because a feature set can be described in fluent, plausible prose and still have no logical continuity with the analysis that preceded it — or cite that analysis inaccurately. Reading the justification on its own terms cannot detect either problem; only comparing it against the group's own earlier work can.
 
 ---
 
@@ -61,6 +61,27 @@ A submission that satisfies both passes this check with a low EDA-overlap count.
 
 ---
 
+---
+
+## Check C — variable citation support
+
+For any predictor variable whose justification cites a specific EDA finding (not a general appeal to "the analysis," a named hypothesis or EDA entry specifically):
+
+1. **Identify what the citation claims the finding shows.** State it in one sentence before checking anything.
+2. **Check the cited finding's actual, established result** — reuse whatever's already in the case file from 3.2 rather than re-deriving it. If the specific finding cited hasn't been assessed yet in this session, ask for the Written Report's own text for it, verbatim.
+3. **Does the actual finding support the claim, partially support it, or not support it at all?**
+   - Full support: the finding genuinely shows what the citation says it shows.
+   - Partial support: the finding shows something related but weaker or narrower than claimed — acceptable if the report itself acknowledges the gap.
+   - No support: the finding is null, contradicts the claim, or shows something substantively different.
+
+**This is separate from Check A's Question 4, not a duplicate of it.** Question 4 sweeps every non-cited variable and asks whether it carries its own reasoning at all, generic or specific. Check C only activates when a variable's justification names a *specific* EDA finding, and verifies that finding is represented accurately — a targeted check on cited variables, not a sweep of uncited ones.
+
+### Guard — acknowledged weakness is not a failure
+
+A citation to a weak or mixed finding is not automatically a problem — the fault is specifically unacknowledged misrepresentation, not citing anything short of a strong result. "While H2 showed only a modest effect, it's directionally consistent with..." correctly represents a weak finding as weak and still uses it as legitimate context.
+
+---
+
 ## Check B — Power BI to notebook pipeline continuity
 
 Whether the model's data preparation continues from the Power BI work or restarts independently.
@@ -97,6 +118,8 @@ No new penalty. Route each finding to the descriptor wording it matches:
 | Pipeline divergence unacknowledged, materially different data | "significant discrepancies between the code and the written description" | D |
 | Predictor retained after the group's own EDA showed it non-varying or unrelated, unacknowledged | "Variable/cluster selection is weak or questionable" | D |
 | Majority of variables carry no reasoning beyond a shared category label | "Variable/cluster selection is weak or questionable" · "justification is limited"/"weak" | C or D |
+| A cited EDA finding overstates a weak/null result as strong, unacknowledged | "Variable/cluster selection is weak or questionable" | C or D |
+| A cited EDA finding is directly contradicted by its actual result | "Variable/cluster selection is weak or questionable" | D |
 | Preparation described but not present in the code | "not implemented as described" | F |
 
 **Two named patterns for "questionable" selection.** The D descriptor's "weak or questionable" is otherwise a judgment call that tends to default upward when the implementation is clean. These two patterns are instances of it, and either one on its own supports D:
@@ -115,6 +138,8 @@ Report both checks as dense itemized evidence, per the Output format compression
 Suggested form:
 
 > **Check A** — EDA overlap 4/23 strict, 7/23 adjacent · non-varying predictor retained: yes, unacknowledged · significant EDA factor omitted: no · non-EDA variables reasoned: shared category label only
+>
+> **Check C** — "H2 supports VIP-tier relevance" claimed for `is_vip_flag` · H2's actual verdict: null (per 3.2) · acknowledged in text: no · support: none
 >
 > **Check B** — notebook source: raw files · R2 cleansing: re-done, altered · divergence acknowledged: no · same-field treatment: differs (mean vs median) · row counts: differ on fact table
 
