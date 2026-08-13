@@ -45,7 +45,10 @@ bm4088-ica2-marking-bot/
     ├── data_dictionary.md
     ├── tutor_guide_data_issues.md
     ├── tutor_guide_scenario_analytics_ref.md
-    └── marking_notes.md
+    ├── marking_notes.md
+    ├── data_viz_principles.md
+    ├── continuity_checks.md
+    └── citation_support_checks.md
 ```
 
 Copy the files already built in this project into `prompts/` and `reference/`, and `CLAUDE.md` into the repo root — those are the deliverables from earlier in this conversation, not something Claude Code needs to (re)write. `reference/marking_notes.md` is included in the download too, so nothing needs to be manually copied in from the project files separately. There's no roster file in the repo at all — the roster lives in a Google Sheet, set up in Section 2 below.
@@ -203,6 +206,10 @@ accuracy verdict and a screenshot's visual cross-check disagree with
 each other -> insight_visual_mismatch; a response noting 3.1's
 implementation verdict and 3.2's accuracy verdict (from the same DAX
 formula) point in different directions -> implementation_accuracy_divergence;
+a response noting a feature or pipeline continuity gap for 4.1, per
+continuity_checks.md -> feature_pipeline_continuity_gap; a response
+noting a citation in 4.2 or 4.3 doesn't actually support what it's
+cited for, per citation_support_checks.md -> unsupported_citation;
 a response noting a notebook's embedded
 saved output disagrees with what the Written Report claims ->
 notebook_output_report_mismatch; a regex check (DAX/Python syntax

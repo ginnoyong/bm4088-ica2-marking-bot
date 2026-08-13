@@ -13,6 +13,8 @@ Not sent to the model — this is for whoever builds the custom API-backed tool.
 /reference/tutor_guide_data_issues.md      — Part 1, authoritative for 2.2 cleansing
 /reference/tutor_guide_scenario_analytics_ref.md   — Part 2, plausibility-only
 /reference/data_viz_principles.md    — taught framework grounding 3.3
+/reference/continuity_checks.md      — 4.1 EDA/pipeline continuity checks
+/reference/citation_support_checks.md — 4.2/4.3 citation-support check (draft)
 /reference/marking_notes.md          — copied in, included in the bundle
 ```
 
@@ -221,6 +223,8 @@ No need to add a special structured tag to the model's output for this — `syst
 | Flags a discrepancy between an uploaded chart screenshot and the marker's typed description (per 3.1 guidance) | `screenshot_description_mismatch` |
 | The formula's Accuracy verdict and the screenshot's visual cross-check disagree with each other (per 3.2 guidance, DAX module step 8) | `insight_visual_mismatch` |
 | 3.1's Implementation verdict and 3.2's Accuracy verdict, from the same DAX formula, point in genuinely different directions (per Marking Principle 4 and the 3.1/3.2 guidance — expected on occasion, not a bug, but worth reviewing) | `implementation_accuracy_divergence` |
+| Response notes a feature or pipeline continuity gap for 4.1, per `continuity_checks.md` (unacknowledged non-varying/omitted predictor, unreasoned variable set, or unacknowledged pipeline divergence) | `feature_pipeline_continuity_gap` |
+| Response notes a citation in 4.2 or 4.3 doesn't actually support the finding it's cited for, per `citation_support_checks.md` | `unsupported_citation` |
 | A notebook's embedded saved output disagrees with what the Written Report itself claims (per Python module step 8) | `notebook_output_report_mismatch` |
 | Message content pattern-matches a different component type than what Haiku classified it as (e.g. contains `CALCULATE(`/`RELATED(` but classified as something other than `dax_formula`; contains `import pandas`/`` ```python `` but classified as something other than `python_code`) | `possible_component_mismatch` |
 | None of the above | `issue_flag = no` |
