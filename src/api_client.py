@@ -83,7 +83,7 @@ def build_request(
     history: list[dict],
     new_message: str,
     component_type: str,
-    max_tokens: int = 8192,
+    max_tokens: int = 64000,
 ) -> dict:
     """Assemble Messages API kwargs with three cache_control breakpoints:
     end of instructions, end of reference bundle, end of prior conversation.
@@ -93,15 +93,19 @@ def build_request(
     ignoring a non-default value. The Haiku classification call in
     model_routing.py still sets temperature=0, which that model still accepts.
 
-    max_tokens defaults well above 1024: both models run adaptive thinking by
-    default when `thinking` is omitted, and thinking tokens count against
-    max_tokens — a tight budget can be consumed entirely by thinking, leaving
-    no room for the visible reply (observed directly: stop_reason="max_tokens"
-    with an empty text block, first at max_tokens=1024, then again at 4096
-    once conversation history grew further — raised to 8192 for the same
-    reason; there's no way to cap thinking specifically since budget_tokens
-    is rejected on these models when thinking is adaptive, so the only lever
-    is giving the combined thinking+text budget more headroom).
+    No `thinking` param here either, on claude-sonnet-5 that means adaptive
+    thinking runs by default — and thinking tokens count against max_tokens,
+    with no separate way to cap them: `budget_tokens` is a 400 on this model
+    (removed in favour of adaptive), so thinking and the visible reply always
+    share one combined max_tokens pool, never two. A tight budget can be
+    consumed entirely by thinking, leaving no room for the reply (observed
+    directly: stop_reason="max_tokens" with an empty text block, first at
+    max_tokens=1024, then again at 4096 once conversation history grew
+    further, then again at 8192 — raised to 64000 for the same reason, well
+    above the ~16000 non-streaming ceiling since the app only ever calls this
+    via stream_marker_message; the only lever is giving the combined pool
+    more headroom, not shrinking thinking's share of it). max_tokens is a
+    ceiling, not a target, so this costs nothing on shorter turns.
     """
     model = select_model(component_type)
 
@@ -142,12 +146,19 @@ def send_marker_message(
     reference_bundle: str,
     history: list[dict],
     new_message: str,
-    max_tokens: int = 8192,
+    max_tokens: int = 16000,
     classify_text: str | None = None,
 ) -> dict:
     """Classify the marker's message, route to the right model, and call
-    the Messages API. Returns the component_type, model used, and the raw
-    API response (for callers to pull usage/content from).
+    the Messages API non-streaming — kept well under the ~16000 ceiling the
+    SDK enforces for non-streaming requests (it raises ValueError above that,
+    estimating the call would exceed the 10-minute idle-connection limit).
+    The app itself never calls this — only the Stage 2 smoke test does — so
+    this doesn't need the 64000 headroom stream_marker_message's live traffic
+    does; a marker-facing turn should always go through the streaming path.
+
+    Returns the component_type, model used, and the raw API response (for
+    callers to pull usage/content from).
 
     `classify_text` lets a caller send a different (always plain-text)
     string to the Haiku classification call than what's actually sent as
@@ -176,7 +187,7 @@ def stream_marker_message(
     new_message: str,
     on_delta: Callable[[str], None],
     should_stop: Callable[[], bool],
-    max_tokens: int = 8192,
+    max_tokens: int = 64000,
     classify_text: str | None = None,
     forced_component_type: str | None = None,
 ) -> dict:
