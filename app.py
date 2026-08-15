@@ -146,8 +146,12 @@ def _get_sheets_worksheet():
     return get_worksheet(client, st.secrets["GOOGLE_SHEET_ID"], st.secrets["GOOGLE_SHEET_NAME"])
 
 
-@st.cache_resource
 def _get_roster_worksheet():
+    # Not cache_resource: the roster check is already live/uncached by design
+    # (see docs/implementation_notes.md), and caching the worksheet handle
+    # would put a cross-session lock around this network call — a single
+    # slow/hung request on a cold cache would stall every concurrent
+    # marker's login, not just the one making the request.
     client = get_sheets_client(dict(st.secrets["gcp_service_account"]))
     return get_worksheet(client, st.secrets["ROSTER_SHEET_ID"], st.secrets["ROSTER_SHEET_NAME"])
 

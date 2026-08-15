@@ -16,6 +16,11 @@ SCOPES = [
 
 WORKSHEET_TITLE = "Log"
 
+# gspread's HTTPClient has no timeout by default, so a slow/unresponsive
+# Sheets API call blocks the calling script run indefinitely instead of
+# raising — set one explicitly so callers' except blocks can ever fire.
+REQUEST_TIMEOUT_SECONDS = 10
+
 COLUMNS = [
     "timestamp",
     "staff_id",
@@ -183,7 +188,9 @@ _PYTHON_PATTERN = re.compile(r"\bimport\s+pandas\b|\bimport\s+sklearn\b|\bfrom\s
 
 def get_client(service_account_info: dict) -> gspread.Client:
     creds = Credentials.from_service_account_info(service_account_info, scopes=SCOPES)
-    return gspread.authorize(creds)
+    client = gspread.authorize(creds)
+    client.http_client.set_timeout(REQUEST_TIMEOUT_SECONDS)
+    return client
 
 
 def get_worksheet(client: gspread.Client, sheet_id: str, worksheet_title: str = WORKSHEET_TITLE) -> gspread.Worksheet:
