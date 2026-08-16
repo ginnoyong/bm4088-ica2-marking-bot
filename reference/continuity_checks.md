@@ -80,6 +80,10 @@ For any predictor variable whose justification cites a specific EDA finding (not
 
 A citation to a weak or mixed finding is not automatically a problem — the fault is specifically unacknowledged misrepresentation, not citing anything short of a strong result. "While H2 showed only a modest effect, it's directionally consistent with..." correctly represents a weak finding as weak and still uses it as legitimate context.
 
+### Guard — the penalty attaches to the misrepresentation, not independently to reusing a flawed object
+
+**When a predictor variable is computed from an object already found flawed elsewhere (a mis-grained DAX column, an invalid categorization confirmed at 3.1/3.2), that fact is context for judging the justification's honesty — it is not a second, independent penalty on top of whatever the misrepresentation earns.** Test this with the same honesty check Check C already uses: if the report had accurately disclosed the known flaw and reasonably justified proceeding anyway ("this categorization was later found unreliable, but we retain it here because..."), the flaw itself would already be fully priced into 3.1/3.2's band — that variable's inclusion should not *also* independently cap 4.1 for the flaw's mere presence. What 4.1 can catch is only whether the justification accurately represents what was already known about the variable, per Check C above. Do not describe "the predictors are drawn from a confirmed-invalid column" as a standalone finding in its own right — state it as the evidence establishing how serious a misrepresentation is, not as a second, separately-counted fault.
+
 ---
 
 ## Check B — Power BI to notebook pipeline continuity
