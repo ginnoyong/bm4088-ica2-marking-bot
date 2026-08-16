@@ -10,7 +10,6 @@ import uuid
 
 import anthropic
 import streamlit as st
-import streamlit.components.v1 as components
 from streamlit.errors import StreamlitSecretNotFoundError
 from streamlit.runtime.scriptrunner import add_script_run_ctx
 
@@ -47,10 +46,13 @@ SCENARIO_NUMBERS = [1, 2, 3, 4, 5, 6]
 # (docs/implementation_notes.md) — never read by any marking or API-call logic.
 # The countdown itself runs client-side in the browser (see _CACHE_TIMER_HTML)
 # so it keeps ticking between Streamlit reruns; the Python side only decides
-# *when to reset it*, by changing the html string passed to components.html
-# (a changed string remounts the iframe, restarting its JS from 5:00 — an
+# *when to reset it*, by changing the html string passed to st.iframe (a
+# changed string remounts the iframe, restarting its JS from 5:00 — an
 # unchanged string across a rerun leaves the existing iframe, and its running
-# timer, untouched).
+# timer, untouched). st.iframe treats a string as raw HTML/srcdoc unless it
+# both lacks "<" and matches an existing file path — our string always
+# contains "<", so it's never mistaken for a file path; no need to write it
+# out to a temp file.
 _CACHE_TIMER_HTML = """
 <div id="ct-wrap" style="font-family:'Source Sans Pro','Segoe UI',sans-serif;
      font-size:13px; color:#83868f; padding:2px 0;">
@@ -89,7 +91,7 @@ _CACHE_TIMER_HTML = """
 
 def _cache_timer_html(token: int) -> str:
     """The leading comment is the only thing that varies — its sole purpose
-    is to change the html string on a reset so components.html remounts the
+    is to change the html string on a reset so st.iframe remounts the
     iframe (see _CACHE_TIMER_HTML). Never touches API calls or caching."""
     return f"<!-- timer-token:{token} -->\n{_CACHE_TIMER_HTML}"
 
@@ -488,7 +490,7 @@ def render_chat() -> None:
 
         timer_token = st.session_state.get("cache_timer_token", 0)
         if timer_token:
-            components.html(_cache_timer_html(timer_token), height=28)
+            st.iframe(_cache_timer_html(timer_token), height=28)
 
         rows = sorted_scorecard_rows(st.session_state.scorecard)
         if rows:
