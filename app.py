@@ -10,6 +10,7 @@ import uuid
 
 import anthropic
 import streamlit as st
+import streamlit.components.v1 as components
 from streamlit.errors import StreamlitSecretNotFoundError
 from streamlit.runtime.scriptrunner import add_script_run_ctx
 
@@ -41,6 +42,57 @@ st.set_page_config(
 )
 
 SCENARIO_NUMBERS = [1, 2, 3, 4, 5, 6]
+
+# Purely informational display of the Claude API's 5-minute prompt cache TTL
+# (docs/implementation_notes.md) — never read by any marking or API-call logic.
+# The countdown itself runs client-side in the browser (see _CACHE_TIMER_HTML)
+# so it keeps ticking between Streamlit reruns; the Python side only decides
+# *when to reset it*, by changing the html string passed to components.html
+# (a changed string remounts the iframe, restarting its JS from 5:00 — an
+# unchanged string across a rerun leaves the existing iframe, and its running
+# timer, untouched).
+_CACHE_TIMER_HTML = """
+<div id="ct-wrap" style="font-family:'Source Sans Pro','Segoe UI',sans-serif;
+     font-size:13px; color:#83868f; padding:2px 0;">
+  <span id="ct-label">Cache active: 5:00</span>
+</div>
+<script>
+(function () {
+  var totalSeconds = 300;
+  var warnSeconds = 30;
+  var startedAt = Date.now();
+  var wrapEl = document.getElementById('ct-wrap');
+  var labelEl = document.getElementById('ct-label');
+
+  function tick() {
+    var elapsed = Math.floor((Date.now() - startedAt) / 1000);
+    var remaining = totalSeconds - elapsed;
+    if (remaining <= 0) {
+      labelEl.textContent = 'Cache likely expired';
+      wrapEl.style.color = '#83868f';
+      wrapEl.style.fontStyle = 'italic';
+      clearInterval(intervalId);
+      return;
+    }
+    var m = Math.floor(remaining / 60);
+    var s = remaining % 60;
+    labelEl.textContent = 'Cache active: ' + m + ':' + (s < 10 ? '0' : '') + s;
+    wrapEl.style.color = remaining <= warnSeconds ? '#d97706' : '#83868f';
+  }
+
+  tick();
+  var intervalId = setInterval(tick, 1000);
+})();
+</script>
+"""
+
+
+def _cache_timer_html(token: int) -> str:
+    """The leading comment is the only thing that varies — its sole purpose
+    is to change the html string on a reset so components.html remounts the
+    iframe (see _CACHE_TIMER_HTML). Never touches API calls or caching."""
+    return f"<!-- timer-token:{token} -->\n{_CACHE_TIMER_HTML}"
+
 
 REQUIRED_TOP_LEVEL_SECRETS = [
     "ANTHROPIC_API_KEY",
@@ -181,6 +233,7 @@ def _start_new_submission() -> None:
     st.session_state.gen_result = None
     st.session_state.gen_error = None
     st.session_state.pending_user_message = None
+    st.session_state.cache_timer_token = 0
 
 
 def render_login() -> None:
@@ -312,6 +365,11 @@ def _start_generation(user_message, forced_component_type: str | None = None) ->
     (set when a .ipynb was attached — see render_chat) — passed through
     as-is so Retry preserves the same certain signal on a re-attempt.
     """
+    # Every call here triggers a real API call, which is the moment the
+    # cache actually gets read/written — reset the display timer's token so
+    # the sidebar countdown restarts at 5:00 (see _cache_timer_html).
+    st.session_state.cache_timer_token = st.session_state.get("cache_timer_token", 0) + 1
+
     # The UI-selected scenario number is app-side state the model never
     # otherwise sees — inject it as the earliest context on every call, so
     # the marker isn't asked to re-supply what they already picked in the
@@ -427,6 +485,10 @@ def render_chat() -> None:
     with st.sidebar:
         if st.button("How to use this bot", key="help_button_chat"):
             _show_help_dialog()
+
+        timer_token = st.session_state.get("cache_timer_token", 0)
+        if timer_token:
+            components.html(_cache_timer_html(timer_token), height=28)
 
         rows = sorted_scorecard_rows(st.session_state.scorecard)
         if rows:
